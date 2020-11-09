@@ -4,9 +4,6 @@ import os
 import socket
 import re
 
-testq = queue.Queue()
-
-
 def ping(address):
     return not os.system("ping %s -n 1 -w 2000" % (address,))
 

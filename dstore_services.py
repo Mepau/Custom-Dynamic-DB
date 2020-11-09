@@ -1,65 +1,73 @@
 import time
-
+import threading
 
 class DStoreServices():
+
+    lock = threading.Lock()
 
     def __init__(self, datastore, dstore_q):
         self.localdict = datastore
         self.localq = dstore_q
 
 
-    def dstoreSet(self, nombre, valor):
+    def dstoreSet(self, name, value):
 
-        if nombre:
+        if name:
             #Si objeto existe en el diccionario
-            if nombre in self.localdict:
-                self.localdict[nombre] = valor
-                self.localq.put((nombre,"UPDATED"))
+            if name in self.localdict:
+                with lock:
+                    self.localdict[name] = value
+                    self.localq.put(((name,value),"UPDATED"))
                 return True
             else:
                 #Objeto no existe en el diccionario
-                self.localdict[nombre] = valor
-                self.localq.put((nombre,"CREATED"))
+                with lock:
+                    self.localdict[name] = value
+                    self.localq.put(((name,value),"CREATED"))
                 return True
 
         return False
 
 
-    def dstoreGet(self, nombre):
+    def dstoreGet(self, name):
 
-        if nombre:
-            if nombre in self.localdict:
-                return self.localdict[nombre]
+        if name:
+            if name in self.localdict:
+                return self.localdict[name]
 
 
-    def dstoreInc(self, nombre, valor):
+    def dstoreInc(self, name, value):
 
-        if nombre in self.localdict:
-            currVal = self.localdict[nombre]
+        if name in self.localdict:
+            currVal = self.localdict[name]
             if currVal.isnumeric():
-                localdict[nombre] = str(int(currVal) + valor)
-                self.localq.put((nombre,"INCREMENT"))
-                return self.localdict[nombre]
+                with lock:
+                    localdict[name] = str(int(currVal) + value)
+                    self.localq.put(((name,value),"INCREMENT"))
+                return self.localdict[name]
             else:
                 print("[ERROR] El objeto no es un numero.")
                 return False
 
         return True
 
-    def dstoreExp(self, nombre, seg):
+    def dstoreExp(self, name, seg):
 
-        if nombre in self.localdict:
-            self.localq.put((nombre,"EXPIRING"))
-            time.sleep(seg)
-            self.localdict.pop(nombre)
-            self.localq.put((nombre,"EXPIRED"))
+        if name in self.localdict:
+            with lock:
+                self.localq.put(((name,seg),"EXPIRING"))
+                time.sleep(seg)
+                self.localdict.pop(name)
+                self.localq.put((name,"EXPIRED"))
+
             return True
         return False
 
 
-    def dstoreDel(self, nombre):
-        if nombre in self.localdict:
-            self.localdict.pop(nombre)
-            self.localq.put((nombre,"EXPIRED"))
+    def dstoreDel(self, name):
+        if name in self.localdict:
+            with lock:
+                self.localdict.pop(name)
+                self.localq.put((name,"EXPIRED"))
             return True
         return False
