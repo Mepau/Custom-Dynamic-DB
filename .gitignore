@@ -2,3 +2,4 @@ venv/
 .vscode
 config.xml
 .env
+__pycache__/

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<methodCall>
+  <methodName></methodName>
+  <params>
+    <param name="nombre">
+       <value><string></string></value>
+    </param>
+    <param name="valor">
+       <value><string></string></value>
+    </param>
+  </params>
+</methodCall>

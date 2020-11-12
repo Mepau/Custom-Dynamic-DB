@@ -11,10 +11,8 @@ class SyncProtocols():
 
         if m_num == magic_num:
             self.local_q.put((name,value), "UPDATE")
-            return True
-        
+            return True        
         return False
 
-    def test(self):
-        print("test")
-        return True
+
+    
