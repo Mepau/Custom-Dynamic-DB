@@ -3,3 +3,4 @@ venv/
 config.xml
 .env
 __pycache__/
+.pyc
