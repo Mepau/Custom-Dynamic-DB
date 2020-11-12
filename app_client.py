@@ -9,7 +9,7 @@ Header = 64
 Port = 8080
 Format = "utf-8"
 Server = os.getenv("HOSTNAME")
-Address = ("10.0.0.123", Port)
+Address = (os.getenv("HOSTNAME"), Port)
 
 Client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 Client.connect(Address)
