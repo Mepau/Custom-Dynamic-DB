@@ -1,18 +1,32 @@
-from comm_protocols import CommProtocols, ping
 
-magic_num = 1962
+class SyncProtocols:
 
-class SyncProtocols():
+    #Inicializar con una estructura de base de dato tipo diccionario
+    def __init__(self, history):
+        self.history = history
+        pass
 
-    def __init__(self, dstore_q):
-        self.local_q = dstore_q
+    #Funcion que retorno booleano en caso de que un id haya sido encontrado en diccionario
+    def check_history(self, rpc_id):
 
-    def update(self, name, value, m_num):
+        if rpc_id in self.history:
+            return True
+        else:
+            return False
 
-        if m_num == magic_num:
-            self.local_q.put((name,value), "UPDATE")
-            return True        
-        return False
+    #Funcion para retornar la data correspondiente a un identificador
+    def get_history(self, rpc_id):
 
+        if rpc_id in self.history:
+            return self.history[rpc_id]
+        else:
+            return False
 
-    
+    def add_history(self, rpc_id, timestamp, origin, address):
+
+        #Cada identificador tiene como valor un diccionario 
+        #para contener los diferentes campos de data
+        self.history[rpc_id] = {}
+        self.history[rpc_id]["timestamp"] = timestamp
+        self.history[rpc_id]["origin"] = origin
+        self.history[rpc_id]["sender"] = f"{address[0]}:{address[1]}"

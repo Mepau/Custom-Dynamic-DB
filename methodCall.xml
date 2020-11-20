@@ -9,4 +9,9 @@
        <value><string></string></value>
     </param>
   </params>
+  <metaData>
+    <id></id>
+    <timestamp></timestamp>
+    <origin></origin>
+  </metaData>
 </methodCall>

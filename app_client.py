@@ -4,42 +4,47 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+#Script para cliente de app de base de datos
+#Solo es necesario modificar los valores de parametros como se comenta mas abajo linea 28
+
 # Valor de configuracion de envio de datos
 Header = 64
-Port = 8080
+Port = 9002
 Format = "utf-8"
 Server = os.getenv("HOSTNAME")
-Address = (os.getenv("HOSTNAME"), Port)
+Address = (Server, Port)
 
 Client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-Client.connect(Address)
+Client.settimeout(10)
 
+try:
+    Client.connect(Address)
+except socket.error as exc:
+    print(exc)
 
-#def send(msg):
-#
-#    if type(msg) == bytes:
-#        message = msg
-#    if type(msg) is not bytes:
-#        message = msg.encode(Format)
-#
-#    MsgLength = len(message)
-#    SendLength = str(MsgLength).encode(Format)
-#    SendLength += b" " * (Header - len(SendLength))
-#    Client.send(SendLength)
-#    Client.send(message)
+addr, port = Client.getsockname()
+tree = ET.parse("methodCall.xml")
 
-tree = ET.parse('methodCall.xml')
-tree2 = ET.parse('methodResponse.xml')
-
+#Solo es necesario modificar estos campos de manera que coincidan como solicitado en el pdf
 tree.find("methodName").text = "Get"
-tree.find(".//param[@name='nombre']/value/string").text = "num"
-tree.find(".//param[@name='valor']/value/string").text = "123"
+tree.find(".//param[@name='nombre']/value/string").text = "valor"
+tree.find(".//param[@name='valor']/value/string").text = "4"
 
 tree = tree.getroot()
-
 msg = ET.tostring(tree)
-print(msg)
-Client.sendall(msg)
-data = Client.recv(1024)
-print(data)
-send("!CLOSE")
+
+try:
+    Client.sendall(msg)
+except socket.error as exc:
+    print(exc)
+
+try:
+    data = Client.recv(1024)
+    print(data)
+except socket.error as exc:
+    print(exc)
+
+try:
+    Client.sendall(b"!CLOSE")
+except socket.error as exc:
+    print(exc)
